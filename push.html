@@ -1,0 +1,116 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// prototype implementation:
+
+
+// function signature:
+  // push(element1[, ...[, elementN]])
+
+// parameters:
+  // elementN
+
+// Return value:
+  // length of new array
+
+// tests:
+  // "It should append elementN to the end of the array provided in the order provided."
+  // "It should return the length of the new array."
+
+  // "If first argument is a string it should throw a type error."
+  // "It should be able to accept a first argument that is an array like obejct."
+
+  // If array like object has a length property:
+    // "If array like object has a length property, it should increment the length property each time an element is pushed."
+    // "If array like object has a length property which can be converted to a number, it should convert array.length to a number and increment the length property each time an element is pushed."
+    // "If array like object has a length property which cannot be converted to a number, it should set array.length = 0 and increment the length property each time an element is pushed."
+
+  // If array like object does not have a length property:
+    // If array like object does not have a length property, it should create a length property for incrementing.
+
+function myPush(array) {
+  
+  // check that first argument is an array/array like object
+  if (typeof array != 'object') {
+    throw new TypeError('myPush can only be used on objects.');
+  }
+  
+  if (!parseInt(array.length)) {
+    array.length = 0;
+  }
+
+  var startingIndex = array.length;
+  var pushArguments = arguments;
+
+  for (var i = 1; i < pushArguments.length; i++) {
+    array[startingIndex] = pushArguments[i];
+    startingIndex++;
+
+    array.length = startingIndex;
+  }
+
+  return array.length
+}
+
+tests({
+  "It should append elementN to the end of the array in the order provided.": function() {
+    var testArray = [1,2,3];
+    var myPushResult = myPush(testArray,4,5,6);
+    eq(testArray[3], 4);
+    eq(testArray[4], 5);
+    eq(testArray[5], 6);
+  },
+
+  "It should return the length of the new array.": function() {
+    var testArray = [1,2,3];
+    var myPushResult = myPush(testArray,4,5,6);
+    eq(myPushResult, 6)
+  },
+
+  "If first argument is a string it should throw a type error.": function() {
+    var testArray = 'not an array';
+    try {
+      myPush(testArray,4,5,6); 
+    } catch(e) {
+      isTypeError = (e instanceof TypeError);
+    }
+    eq(isTypeError, true);
+  },
+  "It should be able to accept a first argument that is an array like object.": function() {
+    var testArrayLikeObj = {
+      length: 0
+    };
+    var myPushResult = myPush(testArrayLikeObj,4);
+    eq(testArrayLikeObj[0],4)
+  },
+  "If array like object has a length property, it should increment the length property each time an element is pushed.": function() {
+    var testArrayLikeObj = {
+      length: 0
+    };
+    var myPushResult = myPush(testArrayLikeObj,4,2);
+    eq(testArrayLikeObj.length,2)
+  },
+  "If array like object does not have a length property, it should create a length property for incrementing.": function() {
+    var testArrayLikeObj = {};
+    var myPushResult = myPush(testArrayLikeObj,4,2);
+    eq(testArrayLikeObj.length,2)
+  },
+  "If array like object has a length property which can be converted to a number, it should convert array.length to a string\
+  and increment the length property each time an element is pushed.": function() {
+    var testArrayLikeObj = {
+      length: '3'
+    };
+    var myPushResult = myPush(testArrayLikeObj,4,2);
+    eq(testArrayLikeObj.length,5)
+  },
+  "If array like object has a length property which cannot be converted to a number, it should set array.length = 0\
+  and increment the length property each time an element is pushed.": function() {
+    var testArrayLikeObj = {
+      length: 'foo'
+    };
+    var myPushResult = myPush(testArrayLikeObj,4,2);
+    eq(testArrayLikeObj.length,2);
+  }
+  
+})
+</script>

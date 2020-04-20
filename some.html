@@ -1,0 +1,137 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// function signature:
+  // some(callback(element[, index[, array]])[, thisArg])
+
+// callback parameters:
+  // currentValue
+  // currentIndex
+  // array
+  // optionalThis
+
+// Return value:
+    // Returns a single value (true/false).
+
+// tests
+  // "It should run array.length times."
+  // "It should pass currentValue as first argument to callback."
+  // "It should pass currentIndex as second argument to callback."
+  // "It should pass array as third argument to callback."
+  // "It should accept an optionalThis object."
+
+  // "It should return true if any element passes callback test."
+  // "It should return false if all elements do not pass callback test."
+
+  // "It should ony run until a true value is found."
+
+  // "It should ignore holes."
+  // "It should ignore deleted elements."
+  // "It should ignore elements added by callback."
+  // "If array is empty, it should return False."
+
+  function mySome(array, callback, optionalThis) {
+    var callbackToRun = callback;
+    var originalArrayLength = array.length;
+
+    if (optionalThis) {
+      callbackToRun = callbackToRun.bind(optionalThis)
+    }
+
+    var callbackResult = false;
+    for (var i = 0; i < originalArrayLength; i++) {
+      if (i in array) {
+        callbackResult = callbackToRun(array[i], i, array);
+      }
+    
+      if (callbackResult) {
+        return callbackResult
+      }
+    }
+
+    return callbackResult
+  }
+
+tests({
+  "It should run array.length times.": function() {
+    var numberOfTimesCallbackRun = 0;
+    mySome([1,2,3], function() {
+      numberOfTimesCallbackRun++;
+    })
+    eq(numberOfTimesCallbackRun, 3);
+  },
+  "It should pass currentValue as first argument to callback.": function() {
+    mySome([1], function(currentValue) {
+      eq(currentValue, 1)
+    })
+  },
+  "It should pass currentIndex as second argument to callback.": function() {
+    mySome([1], function(currentValue, currentIndex) {
+      eq(currentIndex, 0)
+    })
+  },
+  "It should pass array as third argument to callback.": function() {
+    var testArray = [1]
+    mySome(testArray, function(currentValue, currentIndex, array) {
+      eq(array, testArray)
+    })
+  },
+  "It should accept an optionalThis object.": function() {
+    mySome([1,2,3], function(currentValue, currentIndex, array) {
+      eq(this.testProp, 'i should be accesible using the this keyword')
+    }, {testProp: 'i should be accesible using the this keyword'})
+  },
+
+  "It should return true if any element passes callback test.": function() {
+    var mySomeResult = mySome([4,4,3], function(currentValue) {
+      return currentValue === 3
+    })
+    eq(mySomeResult, true)
+  },
+  "It should return true if any element passes callback test.": function() {
+    var mySomeResult = mySome([4,4,3], function(currentValue) {
+      return currentValue < 1
+    })
+    eq(mySomeResult, false)
+  },
+
+  "It should ony run until a true value is found.": function() {
+    var numberOfTimesCallbackRun = 0;
+    mySome([1,2,3], function(currentValue) {
+      numberOfTimesCallbackRun++;
+      return currentValue > 1;
+    })
+    eq(numberOfTimesCallbackRun, 2);
+  },
+
+  "It should ignore holes.": function() {
+    var numberOfTimesCallbackRun = 0;
+    mySome([1,,3,4,,5], function(currentValue) {
+      numberOfTimesCallbackRun++;
+      return currentValue === 5;
+    })
+    eq(numberOfTimesCallbackRun, 4);
+  },
+  "It should ignore deleted elements.": function() {
+    var mySomeResult = mySome([1,3,4,5], function(currentValue, currentIndex, array) {
+      array.splice(3,1);
+      return currentValue === 5;
+    })
+    eq(mySomeResult, false);
+  },
+  "It should ignore elements added by callback.": function() {
+    var mySomeResult = mySome([1,3,4,5], function(currentValue, currentIndex, array) {
+      array.push(6);
+      return currentValue > 5;
+    })
+    eq(mySomeResult, false);
+  },
+
+  "If array is empty, it should return False.": function() {
+    var mySomeResult = mySome([], function(currentValue, currentIndex, array) {
+      return currentValue > 5;
+    })
+    eq(mySomeResult, false);
+  }
+})
+</script>

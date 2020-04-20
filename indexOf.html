@@ -1,0 +1,83 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// prototype implementation:
+  // function myIndexOf(array, searchElement) {
+  //   for (var i = 0; i < array.length; i++) {
+  //     if (array[i] === searchElement) {
+  //       return i;
+  //     }
+  //   }
+  // }
+
+// function signature:
+  // indexOf(searchElement[, fromIndex])
+
+// parameters:
+  // array
+  // searchElement
+  // fromIndex (Optional)
+
+// Return value:
+    // single value (index of first instance of searchElement)
+
+// tests:
+  // "It should return the index of the first occurrence of the searchElement."
+  // "It should return -1 if searchElement is not found."
+
+  // If fromIndex provided:
+    // "If fromIndex provided, begin search starting with provided index of the array."
+    // "If fromIndex provided and is greater than or equal to the array's length, return -1."
+    // "If fromIndex provided and is a negative number, it is taken as the offset from the end of the array."
+    
+function myIndexOf(array, searchElement, fromIndex) {
+  var elementNotFoundIndicator = -1;
+  var startingIndex = 0;
+  var arrayLength = array.length;
+
+  if (fromIndex) {
+    if (fromIndex < 0) {
+      startingIndex = arrayLength - fromIndex;
+    }
+      startingIndex = fromIndex;
+  }
+
+  for (var i = startingIndex; i < arrayLength; i++) {
+    indexOfFoundElement = i;
+    if (array[i] === searchElement) {
+      return i;
+    }
+  }
+
+  return elementNotFoundIndicator;
+}
+
+tests({
+  "It should return the index of the first occurrence of the searchElement.": function() {
+    var testArray = [4,5,6,5]
+    var myIndexOfReturn = myIndexOf(testArray, 5);
+    eq(myIndexOfReturn, 1);
+  },
+  "It should return -1 if searchElement is not found.": function() {
+    var testArray = [4,5,6,5]
+    var myIndexOfReturn = myIndexOf(testArray, 7);
+    eq(myIndexOfReturn, -1);
+  },
+  
+  "If fromIndex provided, begin search starting with provided index of the array.": function() {
+    var testArray = [4,5,6,5]
+    var myIndexOfReturn = myIndexOf(testArray, 5, 2);
+    eq(myIndexOfReturn, 3);
+  },
+  "If fromIndex provided and is greater than or equal to the array's length, return -1.": function() {
+    var testArray = [4,5,6,5]
+    var myIndexOfReturn = myIndexOf(testArray, 5, 4);
+    eq(myIndexOfReturn, -1);
+  },
+  "If fromIndex provided and is a negative number, it is taken as the offset from the end of the array.": function() {
+    var testArray = [4,5,4,6,6,5]
+    var myIndexOfReturn = myIndexOf(testArray, 6, -3);
+    eq(myIndexOfReturn, 3);
+  }
+})
+</script>

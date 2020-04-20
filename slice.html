@@ -1,0 +1,109 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// prototype implementation:
+
+
+// function signature:
+  // slice([begin[, end]])
+
+// parameters:
+  // array
+  // begin (Optional)
+  // end (Optional)
+
+// Return value:
+  // A new array containing the extracted elements.
+
+// tests:
+  // "It should copy the values of the array into a new array."
+  // "If begin provided, it should begin copying from begin."
+  // "If begin and end provided, it should begin copying from begin and end at end - 1."
+  // "If begin is greater than the array's index range, it should return an empty array'."
+  // "If begin is negative, it should begin copying from the  array.length + begin."
+
+  // "If end is negative, it should copy until the  array.length + end."
+  // "If end is greater than the array's index range, it should copy until the end of the array."
+
+  // "Object references on the original array should be maintaied in the new resulting array."
+
+function mySlice(array, begin, end) {
+  var sliceReturnArray = [];
+  var beginIndex = 0;
+  var arrayLength = array.length
+  var endIndex = arrayLength;
+
+  if (begin) {
+    beginIndex = begin;
+
+    if (begin < 0) {
+      beginIndex = arrayLength + beginIndex;
+    }
+  }
+
+  if (end) {
+    if (end < 0) {
+      endIndex = arrayLength + end;
+
+    } else if (end > arrayLength) {
+      endIndex = arrayLength;
+
+    } else {
+      endIndex = end;
+
+    }
+
+  }
+
+  for (var i = beginIndex; i < endIndex; i++) {
+    sliceReturnArray.push(array[i]);
+  }
+
+  return sliceReturnArray;
+};
+
+tests({
+  "It should copy the values of the array into a new array.": function() {
+    var testArray = [1]
+    var mySliceResult = mySlice(testArray);
+    eq(mySliceResult[0], 1);
+  },
+  "If begin provided, it should begin copying from begin.": function() {
+    var testArray = [1,2,3]
+    var mySliceResult = mySlice(testArray,1);
+    eq(mySliceResult[0], 2);
+  },
+  "If begin and end provided, it should begin copying from begin and end at end - 1.": function() {
+    var testArray = [1,2,3,4,5,6]
+    var mySliceResult = mySlice(testArray,1,4);
+    eq(mySliceResult.length, 3);
+  },
+
+  "If begin is greater than the array's index range, it should return an empty array.": function() {
+    var testArray = [1,2,3]
+    var mySliceResult = mySlice(testArray,3);
+    eq(mySliceResult.length, 0);
+  },
+  "If begin is negative, it should begin copying from array.length + begin.": function() {
+    var testArray = [1,2,3]
+    var mySliceResult = mySlice(testArray,-2);
+    eq(mySliceResult.length, 2);
+  },
+  "If end is negative, it should copy until the  array.length + end.": function() {
+    var testArray = [1,2,3,4,5]
+    var mySliceResult = mySlice(testArray,-4, -2);
+    eq(mySliceResult.length, 2);
+  },
+  "If end is greater than the array's index range, it should copy until the end of the array.": function() {
+    var testArray = [1,2,3,4,5]
+    var mySliceResult = mySlice(testArray, 2, 10);
+    eq(mySliceResult.length, 3);
+  },
+  "Object references on the original array should be maintaied in the new resulting array.": function() {
+    var testObject = {testProp: 'this object is the same'}
+    var testArray = [testObject,1]
+    var mySliceResult = mySlice(testArray);
+    eq(mySliceResult[0].testProp, 'this object is the same');
+  }
+})
+</script>

@@ -1,0 +1,90 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// prototype implementation:
+  
+
+// function signature:
+  // concat([value1[, value2[, ...[, valueN]]]])
+
+// parameters:
+  // originalArray
+  // addArg(N) -- can pass N number of addArgs
+
+// Return value:
+    // A new Array instance
+
+// tests:
+  // "It should return an array."
+  // "It should return a new array."
+  // "It should support pushing n additional arguments to the end of the orignal array."
+  // "It should support varying dataTypes."
+
+  // If addtional argument is an array:
+    // "If additional argument is an array, the individual elements of the array should be pushed to the end of the originalArray."
+
+  // "If no addtional arguments passed to myConcat, return a shadow copy of original array."
+  // "Object references on the original array should be maintaied in the new resulting array."
+
+function myConcat(originalArray) {
+  var myConcatArray = originalArray.slice();
+
+  for (var i = 1; i < arguments.length; i++) {
+    var argumentN = arguments[i];
+    var isArray = Array.isArray(argumentN);
+
+    if (isArray) {
+      for (var j = 0; j < argumentN.length; j++) {
+        myConcatArray.push(argumentN[j]);
+      }
+
+    } else {
+      myConcatArray.push(argumentN);
+    }
+  }
+
+  return myConcatArray
+}
+
+tests({
+  "It should return an array.": function() {
+    var testArray = []
+    var myConcatResult = myConcat(testArray);
+    eq(Array.isArray(myConcatResult), true);
+  },
+  "It should return a new array.": function() {
+    var testArray = []
+    var myConcatResult = myConcat(testArray);
+    eq(myConcatResult != testArray, true);
+  },
+  "It should support pushing n additional arguments to the end of the orignal array.": function() {
+    var testArray = [1,2,3]
+    var myConcatResult = myConcat(testArray, 4, 5, 6);
+    eq(myConcatResult[5], 6);
+  },
+  "It should support varying dataTypes.": function() {
+    var testArray = [1,2,3]
+    var myConcatResult = myConcat(testArray, 4, 'a', true);
+    eq(myConcatResult[3] === 4 && myConcatResult[4] === 'a' && myConcatResult[5] === true, true);
+  },
+
+  "If additional argument is an array, the individual elements of the array should be pushed to the end of the originalArray.": function() {
+    var testArray = [1,2,3]
+    var myConcatResult = myConcat(testArray, [4, 5, 6]);
+    eq(myConcatResult[5], 6);
+  },
+
+  "If no addtional arguments passed to myConcat, return a shadow copy of original array.": function() {
+    var testArray = [1]
+    var myConcatResult = myConcat(testArray);
+    eq(myConcatResult[0] === 1 && myConcatResult.length === testArray.length, true);
+  },
+
+  "Object references on the original array should be maintaied in the new resulting array.": function() {
+    var arrayToNest = [1]; 
+    var testArray = [arrayToNest, 2];
+    var myConcatResult = myConcat(testArray);
+    eq(myConcatResult[0], arrayToNest);
+  }
+})
+</script>

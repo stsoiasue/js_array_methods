@@ -1,0 +1,87 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// prototype implementation:
+
+
+// function signature:
+  // includes(valueToFind[, fromIndex])
+
+// parameters:
+  // array
+  // valueToFind
+  // fromIndex (Optional)
+
+// Return value:
+    // true if valueToFind is found, false if not
+
+// tests:
+  // "It should return true if valueToFind is found in the array."
+  // "It should return false if valueToFind is not found in the array."
+  // "It should support all values of zero (-0,0,+0)."
+  // "It should treat 0 as the number 0, not false."
+
+  // If fromIndex provided:
+    // "If fromIndex provided, begin search starting with provided index of the array."
+    // "If fromIndex provided and is a negative number, it is taken as the offset from the end of the array."
+
+function myIncludes(array, valueToFind, fromIndex) {
+  var arrayLength = array.length;
+  var startingIndex = 0;
+
+  if (fromIndex) {
+    if (fromIndex < 0) {
+      startingIndex = arrayLength - fromIndex;
+    } else {
+      startingIndex = fromIndex;
+    }
+  }
+
+  for (var i = startingIndex; i < arrayLength; i++) {
+    if (array[i] === valueToFind) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
+tests({
+  "It should return true if valueToFind is found in the array.": function() {
+    var testArray = [4,5,6,5]
+    var myIncludesReturn = myIncludes(testArray, 5);
+    eq(myIncludesReturn, true);
+  },
+  "It should return false if valueToFind is not found in the array.": function() {
+    var testArray = [4,5,6,5]
+    var myIncludesReturn = myIncludes(testArray, 7);
+    eq(myIncludesReturn, false);
+  },
+  "It should support all values of zero (-0,0,+0).": function() {
+    var testArray1 = [+0]
+    var testArray2 = [0]
+    var testArray3 = [-0]
+    var myIncludesReturn1 = myIncludes(testArray1, 0);
+    var myIncludesReturn2 = myIncludes(testArray2, 0);
+    var myIncludesReturn3 = myIncludes(testArray3, 0);
+    eq(myIncludesReturn1 === true && myIncludesReturn2 === true && myIncludesReturn3 === true, true);
+  },
+  "It should treat 0 as the number 0, not false.": function() {
+    var testArray = [0,1]
+    var myIncludesReturn = myIncludes(testArray, false);
+    eq(myIncludesReturn, false);
+  },
+
+  "If fromIndex provided, begin search starting with provided index of the array.": function() {
+    var testArray = [4,5,6,4]
+    var myIncludesReturn = myIncludes(testArray, 5, 2);
+    eq(myIncludesReturn, false);
+  },
+  "If fromIndex provided and is a negative number, it is taken as the offset from the end of the array.": function() {
+    var testArray = [4,3,6,4,5]
+    var myIncludesReturn = myIncludes(testArray, 3, -1);
+    eq(myIncludesReturn, false);
+  }
+  
+})
+</script>

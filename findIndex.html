@@ -1,0 +1,133 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// Prototype implementation:
+// function myFindIndex(array, callback) {
+//   for (var i = 0; i < array.length; i++) {
+//     var findIndexVal = callback(array[i], i, array);
+//     if (findIndexVal) {
+//       return i;
+//     }
+//   }
+// }
+
+// function signature:
+  // findIndex(callback( element[, index[, array]] )[, thisArg])
+
+// callback parameters:
+  // currentValue
+  // currentIndex
+  // array
+  // optionalThis
+
+// Return value:
+    // Returns a single value.
+
+// tests
+  // "Callback should run array.length times if no value satisfies callback test."
+  // "It should pass currentValue as first argument to callback."
+  // "It should pass currentIndex as second argument to callback."
+  // "It should pass array as third argument to callback."
+  // "It should accept an optionalThis object."
+
+  // "It should return the index of the first value that satisfies callback test."
+  // "It should return -1 if no value satisfies callback test."
+
+  // "It should visit the index of deleted elements."
+  // "It should run no more than the original array.length even if the callback adds to the array."
+  // "Callback should run even where there are holes in the array."
+
+function myFindIndex(array, callback, optionalThis) {
+  var callbackToRun = callback;
+  var originalCallbackLength = array.length;
+
+  if (optionalThis) {
+    callbackToRun = callbackToRun.bind(optionalThis);
+  }
+
+  var callbackTestValue = false;
+  for (var i = 0; i < originalCallbackLength; i++) {
+    callbackTestValue = callbackToRun(array[i], i, array);
+
+    if (callbackTestValue) {
+      return i;
+    }
+  }
+
+  if (!callbackTestValue) {
+    return -1
+  }
+}
+
+tests({
+  "Callback should run array.length times if no value satisfies callback test.": function() {
+    var numTimesCallbackRun = 0;
+    myFindIndex([1,4,5], function(currentValue) {
+      numTimesCallbackRun++;
+    })
+    eq(numTimesCallbackRun, 3);
+  },
+  "It should pass currentValue as first argument to callback.": function() {
+    myFindIndex([1], function(currentValue) {
+      eq(currentValue, 1);
+    })
+  },
+  "It should pass currentIndex as second argument to callback.": function() {
+    myFindIndex([1], function(currentValue, currentIndex) {
+      eq(currentIndex, 0);
+    })
+  },
+  "It should pass array as third argument to callback.": function() {
+    var testArray = [1,2,3];
+    myFindIndex(testArray, function(currentValue, currentIndex, array) {
+      eq(testArray, array);
+    })
+  },
+  "It should accept an optionalThis object.": function() {
+    myFindIndex([1], function() {
+      eq(this.testProp, 'i should be accessible inside callback');
+    }, {testProp: 'i should be accessible inside callback'})
+  },
+
+  "It should return the index of the first value that satisfies callback test.": function() {
+    var myFindIndexReturnValue = myFindIndex([1,4,3,2], function(currentValue) {
+      return currentValue === 2; 
+    })
+    eq(myFindIndexReturnValue, 3);
+  },
+
+  "It should return -1 if no value satisfies callback test.": function() {
+    var myFindIndexReturnValue = myFindIndex([1,4,3,2], function(currentValue) {
+      return currentValue === 5; 
+    })
+    eq(myFindIndexReturnValue, -1);
+  },
+  "It should visit the index of deleted elements.": function() {
+    var numTimesCallbackRun = 0;
+    var testArray = [1,2,3,6,5];
+    myFindIndex(testArray, function(currentValue) {
+      numTimesCallbackRun++;
+      testArray.splice(3,1)
+    })
+    eq(numTimesCallbackRun, 5);
+  },
+
+  "It should run no more than the original array.length even if the callback adds to the array.": function() {
+    var numTimesCallbackRun = 0;
+    var testArray = [1,2,3,6,5];
+    myFindIndex(testArray, function(currentValue) {
+      numTimesCallbackRun++;
+      testArray.push(1)
+      return currentValue === 3
+    })
+    eq(numTimesCallbackRun <= testArray.length, true);
+  },
+  "Callback should run even where there are holes in the array.": function() {
+    var numTimesCallbackRun = 0;
+    myFindIndex([,1, 2, , 4, 5, , 7,, ], function(currentValue) {
+      numTimesCallbackRun++;
+    })
+    eq(numTimesCallbackRun, 9);
+  }
+})
+</script>

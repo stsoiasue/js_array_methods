@@ -1,0 +1,102 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// prototype implementation:
+
+
+// function signature:
+  // join([separator])
+
+// parameters:
+  // array
+  // separator (Optional)
+
+// Return value:
+  // A new string with all of the array's elements concatenated.
+
+// tests:
+  // "It should return a string."
+  // "It should concatenate the values of the array into a comma separated string (excluding the comma from the final element)."
+  // "It should convert numbers to strings."
+  // "It should convert boolean values to strings."
+  // "If an element is a hole or null, it is converted to an empty string."
+
+  // "If separator provided, elements will be sperated with the separator in the output string."
+  // "If array.length is 0, return an empty string."
+  // "If array has one element return element without separator."
+
+function myJoin(array, separator) {
+  var joinedString = '';
+  var joinSeparator = ','
+
+  if (separator) {
+    joinSeparator = separator;
+  }
+
+  for (var i = 0; i < array.length; i++) {
+    var arrayElement = array[i]
+
+    if (arrayElement === null || arrayElement === undefined) {
+      arrayElement = '';
+    }
+    
+    if (i < array.length - 1) {
+      arrayElement = arrayElement + joinSeparator
+    }
+    
+    joinedString = joinedString + arrayElement;
+
+  }
+
+  return joinedString;
+};
+
+tests({
+  "It should return a string.": function() {
+    var testArray = ['test', 'join', 'function']
+    var myJoinResult = myJoin(testArray);
+    eq(typeof myJoinResult, "string")
+  },
+  "It should concatenate the values of the array into a comma separated string (excluding the comma from the final element).": function() {
+    var testArray = ['test', 'join', 'function']
+    var myJoinResult = myJoin(testArray);
+    eq(myJoinResult, "test,join,function")
+  },
+  "It should convert numbers to strings.": function() {
+    var testArray = [1,2,3]
+    var myJoinResult = myJoin(testArray);
+    eq(myJoinResult, "1,2,3")
+  },
+  "It should convert boolean values to strings.": function() {
+    var testArray = [true,false]
+    var myJoinResult = myJoin(testArray);
+    eq(myJoinResult, "true,false")
+  },
+  "If an element is undefined or null, it is converted to an empty string.": function() {
+    var testArray = [null,,undefined,1,2]
+    var myJoinResult = myJoin(testArray);
+    eq(myJoinResult, ",,,1,2")
+  },
+  "If separator provided, elements will be sperated with the separator in the output string.": function() {
+    var testArray = [1,2,3]
+    var myJoinResult = myJoin(testArray, ' ');
+    eq(myJoinResult, "1 2 3")
+  },
+  "If array.length is 0, return an empty string.": function() {
+    var testArray = []
+    var myJoinResult = myJoin(testArray, ' ');
+    eq(myJoinResult, "")
+  },
+  "If array has one element return element without separator.": function() {
+    var testArray = [1]
+    var myJoinResult = myJoin(testArray, ' ');
+    eq(myJoinResult, "1")
+  }
+  
+
+  
+  
+  
+  
+})
+</script>

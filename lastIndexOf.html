@@ -1,0 +1,85 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// prototype implementation:
+
+
+// function signature:
+  // lastIndexOf(searchElement[, fromIndex])
+
+// parameters:
+  // array
+  // searchElement
+  // fromIndex (Optional)
+
+// Return value:
+    // single value (index of last instance of searchElement)
+
+// tests:
+  // "It should return the index of the last occurrence of the searchElement."
+  // "It should return -1 if searchElement is not found."
+  // "If array is empty, return -1";
+
+
+  // If fromIndex provided:
+    // "If fromIndex provided, begin search starting with provided index of the array."
+    // "If fromIndex provided and is greater than or equal to the array's length, search entire array."
+    // "If fromIndex provided and is a negative number, it is taken as the offset from the end of the array."
+
+function myLastIndexOf(array, searchElement, fromIndex) {
+  var arrayLength = array.length;
+  var startingIndex = arrayLength - 1;
+  var elementNotFoundIndicator = -1;
+
+  if (fromIndex) {
+    if (fromIndex < 0) {
+      startingIndex = arrayLength + fromIndex;  
+    } else {
+      startingIndex = fromIndex;
+    }
+  }
+
+  for (var i = startingIndex; i >= 0 ; i--) {
+    if (array[i] === searchElement) {
+      return i;
+    }
+  }
+
+  return elementNotFoundIndicator;
+}
+
+tests({
+  "It should return the index of the last occurrence of the searchElement.": function() {
+    var testArray = [4,5,6,5]
+    var myLastIndexOfReturn = myLastIndexOf(testArray, 5);
+    eq(myLastIndexOfReturn, 3);
+  },
+  "It should return -1 if searchElement is not found.": function() {
+    var testArray = [4,5,6,5]
+    var myLastIndexOfReturn = myLastIndexOf(testArray, 7);
+    eq(myLastIndexOfReturn, -1);
+  },
+  "If array is empty, return -1": function() {
+    var testArray = []
+    var myLastIndexOfReturn = myLastIndexOf(testArray, 7);
+    eq(myLastIndexOfReturn, -1);
+  },
+
+  "If fromIndex provided, begin search starting with provided index of the array.": function() {
+    var testArray = [4,5,6,5]
+    var myLastIndexOfReturn = myLastIndexOf(testArray, 5, 2);
+    eq(myLastIndexOfReturn, 1);
+  },
+  "If fromIndex provided and is greater than or equal to the array's length, search entire array.": function() {
+    var testArray = [4,5,6,5]
+    var myLastIndexOfReturn = myLastIndexOf(testArray, 5, 5);
+    eq(myLastIndexOfReturn, 3);
+  },
+  "If fromIndex provided and is a negative number, it is taken as the offset from the end of the array.": function() {
+    var testArray = [4,5,6,5]
+    var myLastIndexOfReturn = myLastIndexOf(testArray, 5, -1);
+    eq(myLastIndexOfReturn, 3);
+  }
+  
+})
+</script>

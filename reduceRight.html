@@ -1,0 +1,193 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// prototype implementation:
+  // function myReduceRight(array, callback, initialValue) {
+  //   var reducedValue = initialValue; 
+  //   for (var i = array.length - 1; i >= 0; i--) {
+  //     reducedValue = callback(reducedValue, array[i], i, array);
+  //     console.log(reducedValue);
+  //   }
+  //   return reducedValue;
+  // }
+
+// function signature:
+  // reduceRight(callback(accumulator, currentValue[, index[, array]])[, initialValue])
+
+// callback parameters:
+  // resultSoFar
+  // currentValue
+  // currentIndex
+  // array
+  // initialValue
+
+// Return value:
+    // Returns right to left reduced value.
+
+// tests
+  // If initial value:
+    // "If initialValue provided, Callback should run array.length times."
+    // "If initialValue provided, resultSoFar should start with initialValue."
+    // "If initialValue provided, currentValue should start with the last element of the array."
+    // "If initialValue provided and array is empty, initialValue should be returned without calling callback."
+    
+  // If no initial value:
+    // "If no initialValue provided, It should run array.length - 1 times."
+    // "If no initialValue provided, resultSoFar should start with last elemnent of the array."
+    // "If no initialValue provided, currentValue should start with the second to last element of the array."
+    // "If no initialValue provided and array is empty, TypeError should be thrown."
+    // "If no initialValue provided and array has one element, element should be returned without calling callback."
+
+  // "It should actually reduce."
+  // "It should reduce from right to left."
+  // "It should pass currentValue as second argument to callback."
+  // "It should pass currentIndex as third argument to callback."
+  // "It should pass array as fourth argument to callback."
+  // "It should ignore holes."
+
+function myReduceRight(array, callback, initialValue) {  
+  var arrayIndexes = Object.keys(array);
+  var assignedIndexes = arrayIndexes.length;
+  var startingPosition = arrayIndexes[assignedIndexes - 1];
+  var resultSoFar = initialValue;
+  
+  // If no initialValue
+  if (arguments.length < 3) {
+    // If array is empty
+    if (arrayIndexes.length === 0) {
+      throw new TypeError('Reduce of empty array with no initial value');
+    }
+
+    // set resultSoFar to original startingPosition
+    resultSoFar = array[startingPosition];
+    // set startingPosition to next assigned index
+    startingPosition = arrayIndexes[assignedIndexes - 2];
+  }
+
+  for (var i = startingPosition; i >= 0; i--) {
+    if (i in array) {
+      resultSoFar = callback(resultSoFar, array[i], i, array)
+    }
+  }
+
+  return resultSoFar
+};
+
+tests({
+  "If initialValue provided, Callback should run array.length times.": function() {
+    var numTimesCallbackRun = 0
+    myReduceRight([1,2,3], function() {
+      numTimesCallbackRun++;
+    }, 3)
+    eq(numTimesCallbackRun, 3)
+  },
+  "If initialValue provided, resultSoFar should start with initialValue.": function() {
+    myReduceRight([1], function(resultSoFar) {
+      eq(resultSoFar, 0)
+    }, 0)
+  },
+  "If initialValue provided, currentValue should start with the last element of the array.": function() {
+    myReduceRight([1], function(resultSoFar, currentValue) {
+      eq(currentValue, 1)
+    }, 0)
+  },
+  "If initialValue provided and array is empty, initialValue should be returned without calling callback.": function() {
+    var numTimesCallbackRun = 0
+    var myReduceRightResult = myReduceRight([], function(resultSoFar, currentValue) {
+      numTimesCallbackRun++;
+    }, 5)
+    eq(myReduceRightResult === 5 && numTimesCallbackRun === 0, true);
+  },
+
+  "If no initialValue provided, It should run array.length - 1 times.": function() {
+    var numTimesCallbackRun = 0
+    myReduceRight([1,2,3], function() {
+      numTimesCallbackRun++;
+    })
+    eq(numTimesCallbackRun, 2)
+  },
+  "If no initialValue provided, resultSoFar should start with last element of the array.": function() {
+    myReduceRight([2], function(resultSoFar) {
+      eq(resultSoFar, 2)
+    })
+  },
+  "If no initialValue provided, currentValue should start with the second to last element of the array.": function() {
+    myReduceRight([1,2], function(resultSoFar, currentValue) {
+      eq(currentValue, 1)
+    })
+  },
+  "If no initialValue provided and array is empty, TypeError should be thrown.": function() {
+    var isTypeError = false;
+    try {
+      myReduceRight([], function() {});
+    } catch(e) {
+      isTypeError = (e instanceof TypeError);
+    }
+    eq(isTypeError, true);
+  },
+  "If no initialValue provided and array has one element, element should be returned without calling callback.": function() {
+    var numTimesCallbackRun = 0;
+    var myReduceRightResult = myReduceRight([1], function(resultSoFar, currentValue) {      
+      numTimesCallbackRun++;
+    })
+    eq(myReduceRightResult === 1 && numTimesCallbackRun === 0, true)
+  },
+
+  "It should actually reduce.": function() {
+    var myReduceRightResult = myReduceRight([1,2,3], function(resultSoFar, currentValue) {
+      return resultSoFar + currentValue;
+    }, 0)
+    eq(myReduceRightResult, 6)
+  },
+  "It should reduce from right to left.": function() {
+    var testArray = [1,2,3];
+    var arrayRightToLeftPosition = testArray.length - 1;
+    var myReduceRightResult = myReduceRight(testArray, function(resultSoFar, currentValue) {
+      eq(currentValue, testArray[arrayRightToLeftPosition])
+      arrayRightToLeftPosition--;
+    }, 0)
+  },
+
+  "It should pass currentValue as second argument to callback.": function() {
+    myReduceRight([2], function(resultSoFar, currentValue) {
+      eq(currentValue, 2)
+    }, 0)
+  },
+  "It should pass currentIndex as third argument to callback.": function() {
+    myReduceRight([2], function(resultSoFar, currentValue, currentIndex) {
+      eq(currentIndex, 0)
+    }, 0)
+  },
+  "It should pass array as fourth argument to callback.": function() {
+    var testArray = [2]
+    myReduceRight(testArray, function(resultSoFar, currentValue, currentIndex, array) {
+      eq(array, testArray)
+    }, 0)
+  },
+  
+  "If initialValue provided, it should ignore holes.": function() {
+    var numTimesCallbackRun = 0;
+    var myReduceRightResult = myReduceRight([3,,4,,6], function(resultSoFar, currentValue) {
+      numTimesCallbackRun++;
+      return resultSoFar + currentValue
+    }, 0)
+    eq(myReduceRightResult === 13 && numTimesCallbackRun === 3, true)
+  },
+  "If no initialValue provided, it should ignore holes.": function() {
+    var numTimesCallbackRun = 0;
+    var myReduceRightResult = myReduceRight([3,,4,,6], function(resultSoFar, currentValue) {
+      numTimesCallbackRun++;
+      return resultSoFar + currentValue
+    })
+    eq(myReduceRightResult === 13 && numTimesCallbackRun === 2, true);
+  },
+  "If no initialValue provided, it should ignore holes at the beginning of the array.": function() {
+    var numTimesCallbackRun = 0;
+    var myReduceRightResult = myReduceRight([,,,,'a',,'b',,'c'], function(resultSoFar, currentValue) {
+      numTimesCallbackRun++;
+      return resultSoFar + currentValue
+    })
+    eq(myReduceRightResult === 'cba' && numTimesCallbackRun === 2, true)
+  },
+})
+</script>

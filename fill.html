@@ -1,0 +1,203 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// prototype implementation:
+
+
+// function signature:
+  // fill(value[, start[, end]])
+
+// parameters:
+    // fillValue
+    // start (optional)
+    // end (optional)
+
+// Return value:
+// The modified array, filled with value.
+
+// tests:
+    // "It should replace all values of the array with the provided fillValue."
+    // "It should return the modified array."
+
+    // If start provided:
+        // If start provided, replace all values starting from array[start].
+        // If start and end provided, replace all values starting from array[start] and ending at array[end].
+        // If start provided and is negative, replace all values starting from index array.length + start.
+        // If start and end provided and end is negative, replace all values starting from start and ending at array.length + end.
+    
+    // If first parameter is an object each replaced value should reference the object
+
+    // It should be able to accept an array like object
+    // If array like object has a length property which can be converted to a number, replace values with fillValue.
+    
+    // If start provided for array like property:
+        // If start provided with array like property, replace all values starting from array[start].
+        // If start and end provided with  array like property, replace all values starting from array[start] and ending at array[end].
+        // If start provided and is negative with array like property, replace all values starting from index array.length + start.
+        // If start and end provided and end is negative with array like property, replace all values starting from start and ending at array.length + end.
+
+
+function myFill(array, fillValue, start, end) {
+    
+    var startIndex = 0;
+    var endIndex = array.length;
+
+    if (start) {
+        if (start < 0) {
+            startIndex = array.length + start;
+        
+        } else {
+            startIndex = start;
+        
+        }
+    }
+
+    if (end) {
+        if (end < 0) {
+            endIndex = array.length + end;
+
+        } else {
+            endIndex = end;
+
+        }
+    }
+    
+    for (var i = startIndex; i < endIndex; i++) {
+        array[i] = fillValue;
+    }
+
+    return array;
+}
+
+tests({
+    "It should replace all values of the array with the provided fillValue.": function() {
+        var testArray = [1,2,3];
+        var myFillResult = myFill(testArray, 0);
+        for (var i =0; i < testArray.length; i++) {
+            eq(testArray[i], 0);
+        }
+    },
+    "It should return the modified array.": function() {
+        var testArray = [1];
+        var myFillResult = myFill(testArray, 0);
+        eq(myFillResult, testArray);
+        eq(testArray[0], 0);
+    },
+    "If start provided, replace all values starting from array[start].": function() {
+        var testArray = [1,2,3];
+        var myFillResult = myFill(testArray, 0, 1);
+        eq(testArray[0], 1);
+        eq(testArray[1], 0);
+        eq(testArray[2], 0);
+    },
+    "If start and end provided, replace all values starting from array[start] and ending at array[end].": function() {
+        var testArray = [1,2,3,4,5,6];
+        var myFillResult = myFill(testArray, 0, 1, 3);
+        eq(testArray[0], 1);
+        eq(testArray[1], 0);
+        eq(testArray[2], 0);
+        eq(testArray[3], 4);
+        eq(testArray[4], 5);
+        eq(testArray[5], 6);
+    },
+    "If start provided and is negative, replace all values starting from index array.length + start.": function() {
+        var testArray = [1,2,3,4];
+        var myFillResult = myFill(testArray, 0, -2);
+        eq(testArray[0], 1);
+        eq(testArray[1], 2);
+        eq(testArray[2], 0);
+        eq(testArray[3], 0);
+    },
+    "If start and end provided and end is negative, replace all values starting from start and ending at array.length + end.": function() {
+        var testArray = [1,2,3,4,5,6];
+        var myFillResult = myFill(testArray, 0, 1, -2);
+        eq(testArray[0], 1);
+        eq(testArray[1], 0);
+        eq(testArray[2], 0);
+        eq(testArray[3], 0);
+        eq(testArray[4], 5);
+        eq(testArray[5], 6);
+    },
+    "If first parameter is an object each replaced value should reference the object": function() {
+        var fillObj = {prop: 'reference an object'}
+        var testArray = [1,2,3];
+        var myFillResult = myFill(testArray, fillObj);
+        eq(testArray[0], fillObj);
+        eq(testArray[1], fillObj);
+        eq(testArray[2], fillObj);
+    },
+    "It should be able to accept an array like object": function() {
+        var testArray = {
+            length: 3,
+            0:1,
+            1:2,
+            2:3
+        };
+        var myFillResult = myFill(testArray, 0);
+        eq(testArray[0], 0);
+        eq(testArray[1], 0);
+        eq(testArray[2], 0);
+    },
+    "If array like object has a length property which can be converted to a number, replace values with fillValue.": function() {
+        var testArray = {
+            length: '3',
+            0:1,
+            1:2,
+            2:3
+        };
+        var myFillResult = myFill(testArray, 0);
+        eq(testArray[0], 0);
+        eq(testArray[1], 0);
+        eq(testArray[2], 0);
+    },
+    "If start provided with array like property, replace all values starting from array[start].": function() {
+        var testArray = {
+            length: 3,
+            0:1,
+            1:2,
+            2:3
+        };
+        var myFillResult = myFill(testArray, 0, 1);
+        eq(testArray[0], 1);
+        eq(testArray[1], 0);
+        eq(testArray[2], 0);
+    },
+    "If start and end provided with  array like property, replace all values starting from array[start] and ending at array[end].": function() {
+        var testArray = {
+            length: 3,
+            0:1,
+            1:2,
+            2:3
+        };
+        var myFillResult = myFill(testArray, 0, 1,2);
+        eq(testArray[0], 1);
+        eq(testArray[1], 0);
+        eq(testArray[2], 3);
+    },
+    "If start provided and is negative with array like property, replace all values starting from index array.length + start.": function() {
+        var testArray = {
+            length: 3,
+            0:1,
+            1:2,
+            2:3
+        };
+        var myFillResult = myFill(testArray, 0, -2);
+        eq(testArray[0], 1);
+        eq(testArray[1], 0);
+        eq(testArray[2], 0);
+    },
+    "If start and end provided and end is negative with array like property, replace all values starting from start and ending at array.length + end.": function() {
+        var testArray = {
+            length: 3,
+            0:1,
+            1:2,
+            2:3
+        };
+        var myFillResult = myFill(testArray, 0, 0,-1);
+        eq(testArray[0], 0);
+        eq(testArray[1], 0);
+        eq(testArray[2], 3);
+    }
+
+})
+</script>

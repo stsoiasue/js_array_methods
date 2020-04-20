@@ -1,0 +1,137 @@
+<script src="../simpletest.js"></script>
+<script>
+
+// prototype implementation:
+
+
+// function signature:
+  // pop()
+
+// parameters:
+
+// Return value:
+  // The removed element from the array; undefined if the array is empty.
+
+// tests:
+  // "It should remove the last element of an array."
+  // "It should return the the element which was removed."
+  // "If array is empty, return undefined."
+  // "It should be able to accept a first argument that is an array like obejct."
+
+  // If array like object has a length property:  
+    // "If array like object has a length property, it should decrease the length property each time an element is popped."
+    // "If array like object has a length property which can be converted to a number, it should convert array.length to a number and decrese the length property each time an element is popped."
+    // "If array like object has a length property which cannot be converted to a number, it should set array.length = 0 and return undefined."
+
+  // If array like object does not have a length property:
+    // If array like object does not have a length property, it should create a length property set = 0 and return undefined.
+
+  // "If argument[0] is not an array/array like object it should throw a type error."
+
+function myPop(array) {
+
+  if (typeof array != 'object') {
+    throw new TypeError('myPop can only be used on objects.');
+  }
+
+  var indexToRemove = array.length - 1;
+  var elementToPop = array[indexToRemove];
+
+  if (Array.isArray(array)) {
+    array.splice(indexToRemove, 1);
+  
+  } else {
+    
+    if (!parseInt(array.length)) {
+      array.length = 0;
+      return undefined;
+    }
+
+    delete array[indexToRemove];
+    array.length = indexToRemove;
+
+  }
+
+  return elementToPop;
+}
+
+tests({
+  "It should remove the last element of an array.": function() {
+    var testArray = [1,2,3];
+    var myPopReturn = myPop(testArray);
+    eq(testArray.length, 2);
+  },
+  "It should return the the element which was removed.": function() {
+    var testArray = [1,2,'foo'];
+    var myPopReturn = myPop(testArray);
+    eq(myPopReturn, 'foo');
+  },
+  "If array is empty, return undefined.": function() {
+    var testArray = [];
+    var myPopReturn = myPop(testArray);
+    eq(myPopReturn, undefined);
+  },
+  "It should be able to accept a first argument that is an array like obejct.": function() {
+    var testArrayLikeObj = {
+      length: 3,
+      0: 1,
+      1: 2,
+      2: 3
+    };
+    var myPopReturn = myPop(testArrayLikeObj);
+    eq(myPopReturn, 3);
+  },
+  "If array like object has a length property, it should decrease the length property each time an element is popped.": function() {
+    var testArrayLikeObj = {
+      length: 3,
+      0: 1,
+      1: 2,
+      2: 3
+    };
+    var myPopReturn = myPop(testArrayLikeObj);
+    eq(testArrayLikeObj.length, 2);
+  },
+  "If array like object has a length property which can be converted to a number, it should convert array.length to a number\
+  and decrese the length property each time an element is popped.": function() {
+    var testArrayLikeObj = {
+      length: '3',
+      0: 1,
+      1: 2,
+      2: 3
+    };
+    var myPopReturn = myPop(testArrayLikeObj);
+    eq(testArrayLikeObj.length, 2);
+  },
+  "If array like object has a length property which cannot be converted to a number, it should set array.length = 0 and return undefined.": function() {
+    var testArrayLikeObj = {
+      length: 'foo',
+      0: 1,
+      1: 2,
+      2: 3
+    };
+    var myPopReturn = myPop(testArrayLikeObj);
+    eq(testArrayLikeObj.length, 0);
+    eq(myPopReturn, undefined);
+  },
+  "If array like object does not have a length property, it should create a length property set = 0 and return undefined.": function() {
+    var testArrayLikeObj = {
+      0: 1,
+      1: 2,
+      2: 3
+    };
+    var myPopReturn = myPop(testArrayLikeObj);
+    eq(testArrayLikeObj.length, 0);
+    eq(myPopReturn, undefined);
+  },
+  "If argument[0] is not an array/array like object it should throw a type error.": function() {
+    var testArray = 'not an array'
+    try {
+      myPop(testArray);
+    } catch(e) {
+      var isTypeError = (e instanceof TypeError);
+    }
+    eq(isTypeError, true);
+  }
+
+})
+</script>
